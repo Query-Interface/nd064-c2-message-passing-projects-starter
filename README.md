@@ -21,16 +21,21 @@ Run the following commands:
 * kubectl apply -f .\person-service-api.yaml
 
 Initialize the person Database:
-* List the pods via 'kubectl get pods'
-* Note the full name of the pod from the deployment postgres-db-persons
-* Connect to the pod via 'k exec -it <posgres-pod-name> -- bash'
-* In bash, run the following command: 'psql -U ct_person -d persons'
-* then copy the content of modules\person-microservice\db\2021-08-25_init-db.sql and run it in the psql prompt
-* finally execute the content of modules\person-microservice\db\udaconnect_public_person.sql in the psql prompt
+* run the following: modules\location-microservice\scripts\run_db_command.sh
 
 Check that it works correctly by running the following command:
   k run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-persons-api:5000/api/persons"
 it should display the reponse to the route api/response: a JSON array containing all persons
+
+2. Location Service
+
+3. Kafka
+
+4. Connection Service
+
+5. Frontend
+
+
 
 ### Technologies
 * [Flask](https://flask.palletsprojects.com/en/1.1.x/) - API webserver
