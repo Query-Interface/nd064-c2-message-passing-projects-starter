@@ -10,6 +10,28 @@ Management loved the POC so now that there is buy-in, we want to enhance this ap
 
 To do so, ***you will refactor this application into a microservice architecture using message passing techniques that you have learned in this course***. It’s easy to get lost in the countless optimizations and changes that can be made: your priority should be to approach the task as an architect and refactor the application into microservices. File organization, code linting -- these are important but don’t affect the core functionality and can possibly be tagged as TODO’s for now!
 
+### How to run the refactored application
+1. Person microservice
+
+Go to modules/person-microservice/deployment directory.
+Run the following commands:
+* kubectl apply -f .\db-configmap.yaml
+* kubectl apply -f .\db-secret.yaml
+* kubectl apply -f .\postgres-db-persons.yaml
+* kubectl apply -f .\person-service-api.yaml
+
+Initialize the person Database:
+* List the pods via 'kubectl get pods'
+* Note the full name of the pod from the deployment postgres-db-persons
+* Connect to the pod via 'k exec -it <posgres-pod-name> -- bash'
+* In bash, run the following command: 'psql -U ct_person -d persons'
+* then copy the content of modules\person-microservice\db\2021-08-25_init-db.sql and run it in the psql prompt
+* finally execute the content of modules\person-microservice\db\udaconnect_public_person.sql in the psql prompt
+
+Check that it works correctly by running the following command:
+  k run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-persons-api:5000/api/persons"
+it should display the reponse to the route api/response: a JSON array containing all persons
+
 ### Technologies
 * [Flask](https://flask.palletsprojects.com/en/1.1.x/) - API webserver
 * [SQLAlchemy](https://www.sqlalchemy.org/) - Database ORM
