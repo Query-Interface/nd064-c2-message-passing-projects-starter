@@ -28,6 +28,49 @@ class LocationService:
     def retrieve_all() -> List[Location]:
         return db.session.query(Location).all()
 
+    """
+    Below method is a copy of the following method https://github.com/udacity/nd064-c2-message-passing-projects-starter/blob/3fc91d84bb7246daa6baaf55a9eddb4c05669401/modules/api/app/udaconnect/services.py#L17
+    It have been adapt to handle only one location at a time
+
+    It returns all location events that have occurred in the same location and in the specified time range
+    """
+    @staticmethod
+    def retrieve_location_by_proximity(person_id: int, start_date: datetime, end_date: datetime, latitude: float, longitude: float, meters=5) -> List[Location]:
+        data = {
+                    "person_id": person_id,
+                    "longitude": location.longitude,
+                    "latitude": location.latitude,
+                    "meters": meters,
+                    "start_date": start_date.strftime("%Y-%m-%d"),
+                    "end_date": (end_date + timedelta(days=1)).strftime("%Y-%m-%d"),
+                }
+        query = text(
+            """
+        SELECT  person_id, id, ST_X(coordinate), ST_Y(coordinate), creation_time
+        FROM    location
+        WHERE   ST_DWithin(coordinate::geography,ST_SetSRID(ST_MakePoint(:latitude,:longitude),4326)::geography, :meters)
+        AND     person_id != :person_id
+        AND     TO_DATE(:start_date, 'YYYY-MM-DD') <= creation_time
+        AND     TO_DATE(:end_date, 'YYYY-MM-DD') > creation_time;
+        """
+        )
+        result: List[Location] = []
+        for (
+            exposed_person_id,
+            location_id,
+            exposed_lat,
+            exposed_long,
+            exposed_time,
+        ) in db.engine.execute(query, **data):
+            location = Location(
+                id=location_id,
+                person_id=exposed_person_id,
+                creation_time=exposed_time,
+            )
+            location.set_wkt_with_coords(exposed_lat, exposed_long)
+            result.append(location)
+        return result
+
     @staticmethod
     def create(location: Dict) -> Location:
         validation_results: Dict = LocationSchema().validate(location)

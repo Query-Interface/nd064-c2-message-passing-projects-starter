@@ -34,3 +34,12 @@ class LocationResource(Resource):
     def get(self, location_id) -> Location:
         location: Location = LocationService.retrieve(location_id)
         return location
+
+@api.route("/locations/persons/<person_id>")
+@api.param("person_id", "Unique ID for a given Person", _in="query")
+class LocationByProximityResource(Resource):
+    @responds(schema=LocationSchema, many=True)
+    def get(self, person_id) -> List[Location]:
+        locations: List[Location] = LocationService.retrieve_location_by_proximity(person_id, start_date=request.args["start_date"], end_date=request.args["end_date"],
+                latitude=request.args["latitude"], longitude=request.args["longitude"], meters=request.args["meters"])
+        return locations
