@@ -26,11 +26,18 @@ class ConnectionService:
         large datasets. This is by design: what are some ways or techniques to help make this data integrate more
         smoothly for a better user experience for API consumers?
         """
-        locations: List = LocationService.retrieve_all().filter(
+        all_locations: List = LocationService.retrieve_all()
+        filtered = filter(lambda l: l.person_id == person_id, all_locations)
+        filtered = filter(lambda l: l.creation_time < end_date, filtered)
+        filtered = filter(lambda l: l.creation_time >= start_date, filtered)
+        locations = list(filtered)
+        """
+        .filter(
             Location.person_id == person_id
         ).filter(Location.creation_time < end_date).filter(
             Location.creation_time >= start_date
         ).all()
+        """
 
         # Cache all users in memory for quick lookup
         person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
@@ -51,7 +58,7 @@ class ConnectionService:
 
         result: List[Connection] = []
         for line in tuple(data):
-            locations = LocationService.retrive_locations_by_proximity(line["person_id"], line["start_date"], line["end_date"], line["latitude"], line["longitude"], line["meters"])
+            locations = LocationService.retrieve_locations_by_proximity(line["person_id"], line["start_date"], line["end_date"], line["latitude"], line["longitude"], line["meters"])
             for item in locations:
                 result.append(
                     Connection(
@@ -77,7 +84,7 @@ class LocationService:
 
         return locations
 
-    def retrive_locations_by_proximity(person_id: int, start_date: datetime, end_date: datetime, latitude: float, longitude: float, meters: int) -> List[Location]:
+    def retrieve_locations_by_proximity(person_id: int, start_date: datetime, end_date: datetime, latitude: float, longitude: float, meters: int) -> List[Location]:
         locations : List[Location] = []
         response = requests.get("{}/persons/{}?start_date={}&end_date={}&latitude={}&longitude={}&meters".format(LOCATION_SERVICE_API_URL, person_id, start_date, end_date, latitude, longitude, meters))
         body = response.json()
