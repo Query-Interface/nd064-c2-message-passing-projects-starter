@@ -8,7 +8,6 @@ from app import db
 from app.udaconnect.models import Connection, Location, Person
 from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchema
 from geoalchemy2.functions import ST_AsText, ST_Point
-from sqlalchemy.sql import text
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("udaconnect-api")
@@ -52,7 +51,7 @@ class ConnectionService:
 
         result: List[Connection] = []
         for line in tuple(data):
-            locations = LocationService.retrive_locations_by_proximity(line["person_id"], line["start_date"], line["end_date"], line["latitude"], line["longitude"]; line["meters"])
+            locations = LocationService.retrive_locations_by_proximity(line["person_id"], line["start_date"], line["end_date"], line["latitude"], line["longitude"], line["meters"])
             for item in locations:
                 result.append(
                     Connection(
