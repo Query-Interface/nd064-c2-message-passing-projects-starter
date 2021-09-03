@@ -15,23 +15,54 @@ To do so, ***you will refactor this application into a microservice architecture
 
 Go to modules/person-microservice/deployment directory.
 Run the following commands:
-* kubectl apply -f .\db-configmap.yaml
-* kubectl apply -f .\db-secret.yaml
-* kubectl apply -f .\postgres-db-persons.yaml
-* kubectl apply -f .\person-service-api.yaml
+* kubectl apply -f ./db-configmap.yaml
+* kubectl apply -f ./db-secret.yaml
+* kubectl apply -f ./postgres-db-persons.yaml
+* kubectl apply -f ./person-service-api.yaml
 
 Initialize the person Database:
-* run the following: modules\location-microservice\scripts\run_db_command.sh
+* run the following commands: 
+  * list of pods: kubectl get pods | grep postgres-db-persons
+  * copy the pod name. It will be used in the last command
+  * cd modules/person-microservice
+  * ./scripts/run_db_command.sh <podname>
 
 Check that it works correctly by running the following command:
-  k run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-persons-api:5000/api/persons"
+  kubectl run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-persons-api:5000/api/persons"
 it should display the reponse to the route api/response: a JSON array containing all persons
 
 2. Location Service
 
+Go to modules/location-microservice/deployment directory.
+Run the following commands:
+* kubectl apply -f ./db-configmap.yaml
+* kubectl apply -f ./db-secret.yaml
+* kubectl apply -f ./postgres-db-locations.yaml
+* kubectl apply -f ./location-service-api.yaml.yaml
+
+Initialize the person Database:
+* run the following commands: 
+  * list of pods: kubectl get pods | grep postgres-db-locations
+  * copy the pod name. It will be used in the last command
+  * cd modules/location-microservice
+  * ./scripts/run_db_command.sh <podname>
+
+Check that it works correctly by running the following command:
+  kubectl run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-locations-api:5000/api/locations"
+it should display the reponse to the route api/response: a JSON array containing all persons
+
 3. Kafka
 
 4. Connection Service
+
+Go to modules/connection-microservice/deployment directory.
+Run the following commands:
+* kubectl apply -f ./db-configmap.yaml
+* kubectl apply -f ./connection-service-api.yaml
+
+Check that it works correctly by running the following command:
+  kubectl run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-connections-api:5000/api/persons/8/connection"
+it should display the reponse to the route api/response: a JSON array containing all persons
 
 5. Frontend
 
