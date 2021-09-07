@@ -38,11 +38,11 @@ class LocationService:
     def retrieve_location_by_proximity(person_id: int, start_date: datetime, end_date: datetime, latitude: float, longitude: float, meters=5) -> List[Location]:
         data = {
                     "person_id": person_id,
-                    "longitude": location.longitude,
-                    "latitude": location.latitude,
+                    "longitude": longitude,
+                    "latitude": latitude,
                     "meters": meters,
-                    "start_date": start_date.strftime("%Y-%m-%d"),
-                    "end_date": (end_date + timedelta(days=1)).strftime("%Y-%m-%d"),
+                    "start_date": start_date,
+                    "end_date": end_date
                 }
         query = text(
             """

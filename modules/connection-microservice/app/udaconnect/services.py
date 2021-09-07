@@ -27,10 +27,11 @@ class ConnectionService:
         smoothly for a better user experience for API consumers?
         """
         all_locations: List = LocationService.retrieve_all()
-        filtered = filter(lambda l: l.person_id == person_id, all_locations)
+        filtered = filter(lambda l: l.person_id == int(person_id), all_locations)
         filtered = filter(lambda l: l.creation_time < end_date, filtered)
         filtered = filter(lambda l: l.creation_time >= start_date, filtered)
         locations = list(filtered)
+
         """
         .filter(
             Location.person_id == person_id
@@ -47,12 +48,12 @@ class ConnectionService:
         for location in locations:
             data.append(
                 {
-                    "person_id": person_id,
+                    "person_id": int(person_id),
                     "longitude": location.longitude,
                     "latitude": location.latitude,
-                    "meters": meters,
+                    "meters": int(meters),
                     "start_date": start_date.strftime("%Y-%m-%d"),
-                    "end_date": (end_date + timedelta(days=1)).strftime("%Y-%m-%d"),
+                    "end_date": (end_date + timedelta(days=1)).strftime("%Y-%m-%d")
                 }
             )
 
@@ -62,7 +63,7 @@ class ConnectionService:
             for item in locations:
                 result.append(
                     Connection(
-                        person=person_map[line["person_id"]], location=location,
+                        person=person_map[item.person_id], location=item
                     )
                 )
 
@@ -86,7 +87,7 @@ class LocationService:
 
     def retrieve_locations_by_proximity(person_id: int, start_date: datetime, end_date: datetime, latitude: float, longitude: float, meters: int) -> List[Location]:
         locations : List[Location] = []
-        response = requests.get("{}/persons/{}?start_date={}&end_date={}&latitude={}&longitude={}&meters".format(LOCATION_SERVICE_API_URL, person_id, start_date, end_date, latitude, longitude, meters))
+        response = requests.get("{}/persons/{}?start_date={}&end_date={}&latitude={}&longitude={}&meters={}".format(LOCATION_SERVICE_API_URL, person_id, start_date, end_date, latitude, longitude, meters))
         body = response.json()
         for item in body:
             location = Location()
