@@ -53,7 +53,16 @@ it should display the reponse to the route api/response: a JSON array containing
 
 3. Kafka
 
-4. Connection Service
+4. Kafka consumer / producer
+
+Go to modules/location-grpc-kafka
+Run the following commands:
+* kubectl apply -f ./deployment/db-secret.yaml
+* kubectl apply -f ./deployment/location-kafka-cm.yaml 
+* kubectl apply -f ./deployment/location-kafka-service-api.yaml
+* kubectl apply -f ./deployment/location-kafka-consumer.yaml
+
+5. Connection Service
 
 Go to modules/connection-microservice/deployment directory.
 Run the following commands:
@@ -64,7 +73,7 @@ Check that it works correctly by running the following command:
   kubectl run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-connections-api:5000/api/persons/8/connection"
 it should display the reponse to the route api/response: a JSON array containing all persons
 
-5. Frontend
+6. Frontend
 
 
 

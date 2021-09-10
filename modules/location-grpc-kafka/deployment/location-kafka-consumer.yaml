@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: udaconnect-locations-kafka-consumer
+  name: udaconnect-locations-kafka-consumer
+spec:
+  ports:
+  - port: 5005
+    targetPort: 5005
+    nodePort: 30005
+  selector:
+    service: udaconnect-locations-kafka-consumer
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: udaconnect-locations-kafka-consumer
+  name: udaconnect-locations-kafka-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: udaconnect-locations-kafka-consumer
+  template:
+    metadata:
+      labels:
+        service: udaconnect-locations-kafka-consumer
+    spec:
+      containers:
+      - image: queryinterface/nd064-locations-kafka-consumer:latest
+        name: udaconnect-locations-kafka-consumer
+        imagePullPolicy: Always
+        env:
+        - name: KAFKA_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-location-cm
+              key: KAFKA_SERVER
+        - name: KAFKA_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-location-cm
+              key: KAFKA_TOPIC
+        - name: DB_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-location-cm
+              key: DB_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-locations-kafka-secret
+              key: DB_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-location-cm
+              key: DB_NAME
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-location-cm
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: kafka-location-cm
+              key: DB_PORT
+      restartPolicy: Always

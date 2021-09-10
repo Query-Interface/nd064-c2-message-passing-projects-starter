@@ -22,7 +22,8 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
         print(request_value)
         # send the corresponding json message to the Kafka topic
         producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
-        producer.send(KAFKA_TOPIC, json.dumps(request_value))
+        payload = json.dumps(request_value)
+        producer.send(KAFKA_TOPIC, payload.encode('utf-8'))
         producer.flush()
 
         return location_pb2.LocationMessage(**request_value)
@@ -33,7 +34,7 @@ location_pb2_grpc.add_LocationServiceServicer_to_server(LocationServicer(), serv
 
 
 print("Server starting on port 5005...")
-server.add_insecure_port("[::]:5005")
+server.add_insecure_port("127.0.0.1:5999")
 server.start()
 # Keep thread alive
 try:

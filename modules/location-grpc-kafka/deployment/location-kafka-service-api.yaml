@@ -8,7 +8,7 @@ spec:
   ports:
   - port: 5005
     targetPort: 5005
-    nodePort: 30003
+    nodePort: 30004
   selector:
     service: udaconnect-locations-kafka-api
   type: NodePort
@@ -30,7 +30,7 @@ spec:
         service: udaconnect-locations-kafka-api
     spec:
       containers:
-      - image: queryinterface/nd064-locations-kafka-api:latest
+      - image: queryinterface/nd064-locations-kafka-producer:latest
         name: udaconnect-locations-api
         imagePullPolicy: Always
         env:
@@ -41,7 +41,7 @@ spec:
               key: KAFKA_SERVER
         - name: KAFKA_TOPIC
           valueFrom:
-            secretKeyRef:
+            configMapKeyRef:
               name: kafka-location-cm
               key: KAFKA_TOPIC
       restartPolicy: Always
