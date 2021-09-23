@@ -13,12 +13,12 @@ To do so, ***you will refactor this application into a microservice architecture
 ### How to run the refactored application
 1. Person microservice
 
-Go to modules/person-microservice/deployment directory.
+Go to modules/person-microservice directory.
 Run the following commands:
-* kubectl apply -f ./db-configmap.yaml
-* kubectl apply -f ./db-secret.yaml
-* kubectl apply -f ./postgres-db-persons.yaml
-* kubectl apply -f ./person-service-api.yaml
+* kubectl apply -f ./deployment/db-configmap.yaml
+* kubectl apply -f ./deployment/db-secret.yaml
+* kubectl apply -f ./deployment/postgres-db-persons.yaml
+* kubectl apply -f ./deployment/person-service-api.yaml
 
 Initialize the person Database:
 * run the following commands: 
@@ -33,12 +33,12 @@ it should display the reponse to the route api/response: a JSON array containing
 
 2. Location Service
 
-Go to modules/location-microservice/deployment directory.
+Go to modules/location-microservice directory.
 Run the following commands:
-* kubectl apply -f ./db-configmap.yaml
-* kubectl apply -f ./db-secret.yaml
-* kubectl apply -f ./postgres-db-locations.yaml
-* kubectl apply -f ./location-service-api.yaml.yaml
+* kubectl apply -f ./deployment/db-configmap.yaml
+* kubectl apply -f ./deployment/db-secret.yaml
+* kubectl apply -f ./deployment/postgres-db-locations.yaml
+* kubectl apply -f ./deployment/location-service-api.yaml
 
 Initialize the person Database:
 * run the following commands: 
@@ -53,6 +53,18 @@ it should display the reponse to the route api/response: a JSON array containing
 
 3. Kafka
 
+We will install kafka in Kubernetes using the Strimzi operator: https://strimzi.io/quickstarts/
+
+* Create a namespace named kafka: kubectl create namespace kafka
+* Install the strimzi operator: kubectl apply -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
+* Deploy kafka cluster using the modules/kafka/deployment/kafka-crd.yaml
+   kubectl apply -f modules/kafka/deployment/kafka-crd.yaml -n kafka
+* Wait for the creation using the following command: kubectl wait kafka/kafka-cluster --for=condition=Ready --timeout=300s -n kafka
+* It should display "kafka.kafka.strimzi.io/kafka-cluster condition met"
+* With the command kubectl get pods -n kafka, you should see the pods created for kafka
+* Go to modules/kafka
+* Run the following command: kubectl apply -f ./deployment/kafka-crd.yaml -n kafka
+
 4. Kafka consumer / producer
 
 Go to modules/location-grpc-kafka
@@ -64,17 +76,21 @@ Run the following commands:
 
 5. Connection Service
 
-Go to modules/connection-microservice/deployment directory.
+Go to modules/connection-microservice directory.
 Run the following commands:
-* kubectl apply -f ./db-configmap.yaml
-* kubectl apply -f ./connection-service-api.yaml
+* kubectl apply -f ./deployment/db-configmap.yaml
+* kubectl apply -f ./deployment/connection-service-api.yaml
 
+TODO: to be deleted ?
 Check that it works correctly by running the following command:
-  kubectl run tmp --image=busybox -i --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-connections-api:5000/api/persons/8/connection"
+  kubectl run tmp --image=busybox -it --rm --restart=Never -- /bin/sh -c "wget -O- http://udaconnect-connections-api:5000/api/persons/1/connection?start_date=2020-01-01&end_date=2020-12-30&distance=5"
 it should display the reponse to the route api/response: a JSON array containing all persons
 
 6. Frontend
 
+Go to modules/frontend
+Run the following commands:
+* kubectl apply -f ./deployment/udaconnect-app.yaml
 
 
 ### Technologies

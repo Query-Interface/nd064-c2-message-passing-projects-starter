@@ -1,0 +1,26 @@
+grpc is used to send location of person with their mobile devices.
+
+The location message contains 3 attributes:
+  - the person identifier
+  - the latitude of the position where the person is located
+  - the longitude of the position where the person is located
+
+How to test ?
+  - use kubectl CLI to list the pods of the deployment *udaconnect-locations-kafka-api* and connect to one of the pods
+    => kubectl get pods | grep udaconnect-locations-kafka-api
+  - copuy the podname
+  - use it in the following command: kubectl exec <podname> -- python location_client.py
+
+You can then verify that a location have been added by accessing the following: http://localhost:30002/api/locations
+
+----
+
+message LocationMessage {
+  int32 personId = 1;
+  float latitude = 2;
+  float longitude = 3;
+}
+
+service LocationService {
+  rpc Create(LocationMessage) returns (LocationMessage);
+}
