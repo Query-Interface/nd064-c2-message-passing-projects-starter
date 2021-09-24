@@ -20,8 +20,8 @@ api = Namespace("UdaConnect", description="Connections via geolocation.")  # noq
 # TODO: This needs better exception handling
 
 @api.route("/persons/<person_id>/connection")
-@api.param("start_date", "Lower bound of date range", _in="query")
-@api.param("end_date", "Upper bound of date range", _in="query")
+@api.param("start_date", "Lower bound of date range", _in="query", required=True)
+@api.param("end_date", "Upper bound of date range", _in="query", required=True)
 @api.param("distance", "Proximity to a given user in meters", _in="query")
 class ConnectionDataResource(Resource):
     @responds(schema=ConnectionSchema, many=True)

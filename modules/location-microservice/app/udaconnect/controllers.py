@@ -37,6 +37,11 @@ class LocationResource(Resource):
 
 @api.route("/locations/persons/<person_id>")
 @api.param("person_id", "Unique ID for a given Person", _in="query")
+@api.param("start_date", "Lower bound of date range", _in="query", required=True)
+@api.param("end_date", "Upper bound of date range", _in="query", required=True)
+@api.param("latitude", "Latitude of thge position of the current user", _in="query", required=True)
+@api.param("longitude", "Latitude of thge position of the current user", _in="query", required=True)
+@api.param("meters", "Proximity to a given user in meters", _in="query", required=True)
 class LocationByProximityResource(Resource):
     @responds(schema=LocationSchema, many=True)
     def get(self, person_id) -> List[Location]:

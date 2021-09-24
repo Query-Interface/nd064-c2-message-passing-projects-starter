@@ -78,7 +78,14 @@ class LocationService:
         for item in body:
             location = Location()
             location.person_id = item["person_id"]
-            location.creation_time = datetime.strptime(item['creation_time'], "%Y-%m-%dT%H:%M:%S")
+            try:
+                location.creation_time = datetime.strptime(item['creation_time'], "%Y-%m-%dT%H:%M:%S")
+            except ValueError as v:
+                ulr = len(v.args[0].partition('unconverted data remains: ')[2])
+                if ulr:
+                    location.creation_time = datetime.strptime(item['creation_time'][:-ulr], "%Y-%m-%dT%H:%M:%S")
+                else:
+                    raise v
             location.set_wkt_with_coords(item["latitude"], item["longitude"])
             location.id = item["id"]
             locations.append(location)
@@ -92,7 +99,14 @@ class LocationService:
         for item in body:
             location = Location()
             location.person_id = item["person_id"]
-            location.creation_time = datetime.strptime(item['creation_time'], "%Y-%m-%dT%H:%M:%S")
+            try:
+                location.creation_time = datetime.strptime(item['creation_time'], "%Y-%m-%dT%H:%M:%S")
+            except ValueError as v:
+                ulr = len(v.args[0].partition('unconverted data remains: ')[2])
+                if ulr:
+                    location.creation_time = datetime.strptime(item['creation_time'][:-ulr], "%Y-%m-%dT%H:%M:%S")
+                else:
+                    raise v
             location.set_wkt_with_coords(item["latitude"], item["longitude"])
             location.id = item["id"]
             locations.append(location)
